@@ -22,6 +22,8 @@ export const env = {
   REDIS_KEY_PREFIX:
     getEnv('REDIS_KEY_PREFIX') || `${getEnv('APP_NAME', true)}:`,
 
+  RABBITMQ_URL: getEnv('RABBITMQ_URL', true),
+
   get isDevelopment() {
     return this.NODE_ENV === 'development';
   },

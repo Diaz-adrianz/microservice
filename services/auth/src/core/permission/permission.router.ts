@@ -12,6 +12,13 @@ import { requirePermissions } from '../../middlewares/permission.middleware.js';
 const r = Router(),
   controller = permissionController;
 
+r.get(
+  '/release',
+  requireAuth(),
+  requirePermissions('permission.release'),
+  controller.release
+);
+
 r.patch(
   '/upsert-many',
   requireAuth(),

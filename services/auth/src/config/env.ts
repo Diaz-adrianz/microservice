@@ -25,10 +25,7 @@ export const env = {
   REDIS_KEY_PREFIX:
     getEnv('REDIS_KEY_PREFIX') || `${getEnv('APP_NAME', true)}:`,
 
-  MAIL_HOST: getEnv('MAIL_HOST'),
-  MAIL_PORT: parseInt(getEnv('MAIL_PORT') ?? '587'),
-  MAIL_USER: getEnv('MAIL_USER'),
-  MAIL_PASS: getEnv('MAIL_PASS'),
+  RABBITMQ_URL: getEnv('RABBITMQ_URL', true),
 
   get isDevelopment() {
     return this.NODE_ENV === 'development';

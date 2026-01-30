@@ -4,6 +4,7 @@ import app from './app.js';
 import { env } from './config/env.js';
 import { prisma } from './lib/prisma/index.js';
 import { redis } from './lib/redis/index.js';
+import './lib/rabbitmq/consumers';
 
 const server = http.createServer(app);
 

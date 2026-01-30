@@ -14,6 +14,8 @@ const permissions: Record<
       delete: ['Superadmin'],
     },
     permission: {
+      release: ['Superadmin'],
+      'upsert-many': ['Superadmin'],
       browse: ['Superadmin'],
       create: ['Superadmin'],
       read: ['Superadmin'],
@@ -29,6 +31,12 @@ const permissions: Record<
       read: undefined,
       update: ['Superadmin'],
       delete: ['Superadmin'],
+    },
+  },
+  log: {
+    logevent: {
+      browse: undefined,
+      read: undefined,
     },
   },
 };

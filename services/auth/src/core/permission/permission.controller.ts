@@ -15,6 +15,11 @@ class PermissionController extends BaseController {
     this.#service = permissionService;
   }
 
+  release = async (req: Request, res: Response) => {
+    await this.#service.release();
+    return this.success(res, null, 'Permissions released');
+  };
+
   upsertMany = async (
     req: Request<{ id: string }, {}, UpsertPermissions>,
     res: Response

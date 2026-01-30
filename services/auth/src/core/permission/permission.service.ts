@@ -2,6 +2,8 @@ import BaseService from '../../base/service.base.js';
 import { browseQueryParser } from '../../lib/browse-query/parser.js';
 import type { BrowseQuery } from '../../lib/browse-query/schema.js';
 import { prisma } from '../../lib/prisma/index.js';
+import RabbitMQ from '../../lib/rabbitmq/index.js';
+import { QUEUES } from '../../lib/rabbitmq/queues.js';
 import type {
   UpdatePermission,
   UpsertPermissions,
@@ -11,6 +13,49 @@ class PermissionService extends BaseService {
   constructor() {
     super(prisma);
   }
+
+  release = async (...reqServices: string[]) => {
+    const services = (
+      await this.db.permission.groupBy({
+        by: ['service'],
+        where: {
+          ...(reqServices.length && {
+            service: { in: reqServices },
+          }),
+        },
+      })
+    ).map((s) => s.service);
+
+    const roles = await this.db.role.findMany({
+      where: { isActive: true },
+      select: {
+        name: true,
+        permissions: {
+          where: {
+            service: { in: services },
+          },
+          select: { service: true, resource: true, action: true },
+        },
+      },
+    });
+
+    const servicesMap: Record<string, Record<string, string[]>> = {};
+
+    for (const service of services) {
+      const roleMap: Record<string, string[]> = {};
+      for (const role of roles) {
+        const perms = role.permissions
+          .filter((permission) => permission.service === service)
+          .map((permission) => `${permission.resource}.${permission.action}`);
+
+        roleMap[role.name] = perms;
+      }
+      servicesMap[service] = roleMap;
+    }
+
+    const rabbit = await RabbitMQ.getInstance();
+    rabbit.produce(QUEUES.AUTH_PERMISSIONS_RELEASED, servicesMap);
+  };
 
   upsertMany = async (payload: UpsertPermissions) => {
     for (const perm of payload.permissions)
