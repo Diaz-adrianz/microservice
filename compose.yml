@@ -10,7 +10,7 @@ services:
     volumes:
       - pgdata_dev:/var/lib/postgresql/data
     ports:
-      - '${HOST_POSTGRES:-5432}:5432'
+      - '${POSTGRES_BIND_PORT:-5432}:5432'
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
@@ -24,8 +24,8 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-rabbit}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-rabbitpass}
     ports:
-      - '${HOST_RABBITMQ:-5672}:5672'
-      - '${HOST_RABBITMQ_ADMIN:-15672}:15672'
+      - '${RABBITMQ_BIND_PORT:-5672}:5672'
+      - '${RABBITMQ_ADMIN_BIND_PORT:-15672}:15672'
     networks: [core]
 
   gateway:
@@ -54,9 +54,13 @@ services:
     volumes:
       - ./services/auth:/app
       - auth_node_modules:/app/node_modules
+      - pnpm_store:/pnpm-store
     env_file:
-      - './.env'
       - ./services/auth/.env
+    environment:
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_ISSUER: ${JWT_ISSUER}
+      RABBITMQ_URL: ${RABBITMQ_URL}
     depends_on:
       postgres:
         condition: service_healthy
@@ -83,9 +87,11 @@ services:
     volumes:
       - ./services/log:/app
       - log_node_modules:/app/node_modules
+      - pnpm_store:/pnpm_store
     env_file:
-      - './.env'
       - ./services/log/.env
+    environment:
+      RABBITMQ_URL: ${RABBITMQ_URL}
     depends_on:
       postgres:
         condition: service_healthy
@@ -103,6 +109,7 @@ volumes:
   service_log_redis_dev:
   auth_node_modules:
   log_node_modules:
+  pnpm_store:
 
 networks:
   core:
