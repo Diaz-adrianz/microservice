@@ -1,0 +1,108 @@
+name: microservice-dev
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS:-postgres_admin_pass}
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    ports:
+      - '${HOST_POSTGRES:-5432}:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks: [core]
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-rabbit}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-rabbitpass}
+    ports:
+      - '${HOST_RABBITMQ:-5672}:5672'
+      - '${HOST_RABBITMQ_ADMIN:-15672}:15672'
+    networks: [core]
+
+  gateway:
+    image: nginx:1.27-alpine
+    depends_on:
+      - service-auth
+      - service-log
+    ports:
+      - '8080:80'
+    volumes:
+      - ./gateways/nginx/proxy.conf:/etc/nginx/nginx.conf:ro
+    networks: [core]
+
+  # ================== SERVICE AUTH ==================
+  service-auth-redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - service_auth_redis_dev:/data
+    networks: [core]
+
+  service-auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    volumes:
+      - ./services/auth:/app
+      - /app/node_modules
+    env_file:
+      - './.env'
+      - ./services/auth/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      service-auth-redis:
+        condition: service_started
+    command: ['pnpm', 'dev']
+    networks: [core]
+  # ================== SERVICE AUTH ==================
+
+  # ================== SERVICE LOG ==================
+  service-log-redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - service_log_redis_dev:/data
+    networks: [core]
+
+  service-log:
+    build:
+      context: ./services/log
+      dockerfile: Dockerfile
+    volumes:
+      - ./services/log:/app
+      - /app/node_modules
+    env_file:
+      - './.env'
+      - ./services/log/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      service-log-redis:
+        condition: service_started
+    command: ['pnpm', 'dev']
+    networks: [core]
+  # ================== SERVICE LOG ==================
+
+volumes:
+  pgdata_dev:
+  service_auth_redis_dev:
+  service_log_redis_dev:
+
+networks:
+  core:
+    driver: bridge
+

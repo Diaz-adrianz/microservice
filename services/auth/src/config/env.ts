@@ -1,0 +1,36 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+export const getEnv = (key: string, required: boolean = false): string => {
+  const value = process.env[key];
+  if (value == undefined && required)
+    throw new Error(`Missing required environment variable: ${key}`);
+  return value ?? '';
+};
+
+export const env = {
+  NODE_ENV: getEnv('NODE_ENV', true),
+  APP_NAME: getEnv('APP_NAME', true),
+  PORT: parseInt(getEnv('PORT', true)),
+
+  DATABASE_URL: getEnv('DATABASE_URL', true),
+
+  JWT_ACCESS_SECRET: getEnv('JWT_ACCESS_SECRET', true),
+  JWT_ISSUER: getEnv('JWT_ISSUER'),
+
+  REDIS_HOST: getEnv('REDIS_HOST') ?? '127.0.0.1',
+  REDIS_PORT: parseInt(getEnv('REDIS_PORT') ?? '6379'),
+  REDIS_USER: getEnv('REDIS_USER'),
+  REDIS_PASS: getEnv('REDIS_PASS'),
+  REDIS_KEY_PREFIX:
+    getEnv('REDIS_KEY_PREFIX') || `${getEnv('APP_NAME', true)}:`,
+
+  MAIL_HOST: getEnv('MAIL_HOST'),
+  MAIL_PORT: parseInt(getEnv('MAIL_PORT') ?? '587'),
+  MAIL_USER: getEnv('MAIL_USER'),
+  MAIL_PASS: getEnv('MAIL_PASS'),
+
+  get isDevelopment() {
+    return this.NODE_ENV === 'development';
+  },
+};

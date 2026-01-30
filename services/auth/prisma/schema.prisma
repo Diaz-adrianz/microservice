@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/lib/prisma/output"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String  @map("user_id")
+  type              String  @map("type")
+  provider          String  @map("provider")
+  providerAccountId String  @map("provider_account_id")
+  password          String? @map("password")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model User {
+  id         String    @id @default(uuid())
+  name       String    @map("name")
+  email      String    @unique @map("email")
+  picture    String?   @map("picture")
+  isActive   Boolean?  @map("is_active")
+  isVerified Boolean?  @map("is_verified")
+  verifiedAt DateTime? @map("verified_at")
+
+  roles    Role[]
+  accounts Account[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Role {
+  id       String  @id @default(uuid())
+  name     String  @unique @map("name")
+  isActive Boolean @default(true) @map("is_active")
+
+  users       User[]
+  permissions Permission[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String  @id @default(uuid())
+  service     String  @map("service")
+  resource    String  @map("resource")
+  action      String  @map("action")
+  description String? @map("description")
+  isActive    Boolean @default(true) @map("is_active")
+
+  roles Role[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([service, resource, action])
+  @@map("permissions")
+}

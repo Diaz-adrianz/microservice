@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# prisma
+/src/lib/prisma/output
+
+#resources
+/public
+/tmp
+/images
+/files
+/uploads
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+.env
+
+/src/generated/prisma
