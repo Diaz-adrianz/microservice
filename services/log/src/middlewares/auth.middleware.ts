@@ -7,7 +7,18 @@ const requireAuth = () => {
     _: Response,
     next: NextFunction
   ) => {
-    if (!req.headers['x-user-id']) throw new Unauthenticated();
+    const userId = req.headers['x-user-id'] as string | undefined;
+    if (!userId) throw new Unauthenticated();
+
+    try {
+      req.user = {
+        id: userId,
+        roles:
+          (req.headers['x-user-roles'] as string | undefined)?.split(',') ?? [],
+      };
+    } catch {
+      throw new Unauthenticated();
+    }
     next();
   };
 };
