@@ -18,13 +18,11 @@ COPY prisma ./prisma
 COPY src ./src
 COPY package.json ./package.json
 
-RUN pnpm prisma generate
 RUN pnpm build
 
 # ---- runtime ----
 FROM node:20-slim AS runtime
 WORKDIR /app
-ENV NODE_ENV=production
 
 RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
 
