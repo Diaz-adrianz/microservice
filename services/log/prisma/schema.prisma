@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/lib/prisma/output"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model LogEvent {
+  id String   @id @default(uuid())
+  ts DateTime @default(now()) @map("ts")
+
+  level   String  @map("level")
+  service String  @map("service")
+  message String? @map("message")
+
+  actorType  String  @map("actor_type")
+  actorId    String? @map("actor_id")
+  actorName  String? @map("actor_name")
+  actorRoles String? @map("actor_roles")
+  actorIp    String? @map("actor_ip")
+  userAgent  String? @map("user_agent")
+
+  resource   String? @map("resource")
+  resourceId String? @map("resource_id")
+
+  action String? @map("action")
+  data   Json?   @map("data")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("log_events")
+}

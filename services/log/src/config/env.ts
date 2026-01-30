@@ -13,6 +13,8 @@ export const env = {
   APP_NAME: getEnv('APP_NAME', true),
   PORT: parseInt(getEnv('PORT', true)),
 
+  DATABASE_URL: getEnv('DATABASE_URL', true),
+
   REDIS_HOST: getEnv('REDIS_HOST') ?? '127.0.0.1',
   REDIS_PORT: parseInt(getEnv('REDIS_PORT') ?? '6379'),
   REDIS_USER: getEnv('REDIS_USER'),

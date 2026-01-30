@@ -1,6 +1,8 @@
 import express from 'express';
 import httpStatus from 'http-status';
 import { env } from './config/env.js';
+import router from './router.js';
+import { errorMiddleware } from './middlewares/error.middleware.js';
 
 const app = express();
 
@@ -8,9 +10,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/ping', (req, res) => {
-  return res.send('PONG');
-});
+// apis
+app.use('/', router);
 
 // not found
 app.use((_, res) => {
@@ -18,5 +19,8 @@ app.use((_, res) => {
     message: `[${env.APP_NAME}] API endpoint not found`,
   });
 });
+
+// global error handling
+app.use(errorMiddleware);
 
 export default app;
