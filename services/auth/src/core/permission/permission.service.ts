@@ -33,6 +33,7 @@ class PermissionService extends BaseService {
         permissions: {
           where: {
             service: { in: services },
+            isActive: true,
           },
           select: { service: true, resource: true, action: true },
         },

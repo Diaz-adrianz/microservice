@@ -1,4 +1,5 @@
-import { redis } from '../../redis';
+import { logger } from '../../logger/index.js';
+import { redis } from '../../redis/index.js';
 
 export const authPermissionsReleased = async (data: any) => {
   try {
@@ -11,6 +12,6 @@ export const authPermissionsReleased = async (data: any) => {
     });
     await multi.exec();
   } catch (err) {
-    console.error('[Consumer] failed to save released permissions', err);
+    logger.error('[Consumer] failed to save released permissions', err);
   }
 };

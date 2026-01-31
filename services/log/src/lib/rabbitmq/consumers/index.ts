@@ -1,3 +1,4 @@
+import { logger } from '../../logger';
 import RabbitMQ from '../index';
 import { QUEUES } from '../queues';
 import { authPermissionsReleased } from './permissions-released.consumer';
@@ -7,7 +8,7 @@ async function bootstrap() {
 
   await mq.consume(QUEUES.AUTH_PERMISSIONS_RELEASED, authPermissionsReleased);
 
-  console.log('[RabbitMQ] consumers running');
+  logger.info('[RabbitMQ] consumers running');
 }
 
-bootstrap().catch(console.error);
+bootstrap().catch(logger.error);

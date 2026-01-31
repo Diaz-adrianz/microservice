@@ -7,6 +7,7 @@ import {
   PrismaClientValidationError,
   PrismaClientKnownRequestError,
 } from '../lib/prisma/output/internal/prismaNamespace.js';
+import { logger } from '../lib/logger/index.js';
 
 class HttpError extends Error {
   httpCode: number;
@@ -67,7 +68,7 @@ const errorMiddleware = (
     data = undefined;
   const stack = env.isDevelopment ? err?.stack?.split('\n') : undefined;
 
-  if (env.isDevelopment) console.log(err);
+  if (env.isDevelopment) logger.log(err);
 
   if (err instanceof PrismaClientKnownRequestError && err.code == 'P2003') {
     httpCode = httpStatus.UNPROCESSABLE_ENTITY;
@@ -122,7 +123,7 @@ const errorMiddleware = (
     httpCode = err.httpCode;
     message = err.message;
   } else {
-    console.error(err);
+    logger.error(err);
   }
 
   res.status(httpCode).json({

@@ -39,6 +39,7 @@
     "nodemailer": "^7.0.12",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
+    "winston": "^3.19.0",
     "yup": "^1.7.1"
   },
   "devDependencies": {

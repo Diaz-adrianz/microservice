@@ -1,5 +1,6 @@
 import amqp, { Channel, ChannelModel, Options } from 'amqplib';
 import { env } from '../../config/env.js';
+import { logger } from '../logger/index.js';
 
 class RabbitMQ {
   private static instance: RabbitMQ;
@@ -31,9 +32,9 @@ class RabbitMQ {
       this.channel.on('close', () => this.reconnect());
 
       this.setupProcessHooks();
-      console.log('[RabbitMQ] connected');
+      logger.info('[RabbitMQ] connected');
     } catch (err) {
-      console.error('[RabbitMQ] connect failed, retrying...', err);
+      logger.error('[RabbitMQ] connect failed, retrying...', err);
       setTimeout(() => this.connect(), 3000);
     } finally {
       this.connecting = false;
@@ -41,7 +42,7 @@ class RabbitMQ {
   }
 
   private async reconnect() {
-    console.warn('[RabbitMQ] reconnecting...');
+    logger.warn('[RabbitMQ] reconnecting...');
     this.channel = undefined;
     this.conn = undefined;
     await this.connect();
@@ -79,7 +80,7 @@ class RabbitMQ {
         await handler(data);
         ch.ack(msg);
       } catch (err) {
-        console.error('[RabbitMQ] consume error', err);
+        logger.error('[RabbitMQ] consume error', err);
         ch.nack(msg, false, false);
       }
     });
