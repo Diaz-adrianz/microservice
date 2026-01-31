@@ -42,9 +42,6 @@ services:
   # ================== SERVICE AUTH ==================
   service-auth-redis:
     image: redis:7-alpine
-    command: ['redis-server', '--appendonly', 'yes']
-    volumes:
-      - service_auth_redis_dev:/data
     networks: [core]
 
   service-auth:
@@ -75,9 +72,6 @@ services:
   # ================== SERVICE LOG ==================
   service-log-redis:
     image: redis:7-alpine
-    command: ['redis-server', '--appendonly', 'yes']
-    volumes:
-      - service_log_redis_dev:/data
     networks: [core]
 
   service-log:
@@ -105,8 +99,6 @@ services:
 
 volumes:
   pgdata_dev:
-  service_auth_redis_dev:
-  service_log_redis_dev:
   auth_node_modules:
   log_node_modules:
   pnpm_store:
