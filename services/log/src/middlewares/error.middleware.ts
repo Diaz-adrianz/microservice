@@ -1,7 +1,6 @@
 import httpStatus from 'http-status';
 import type { NextFunction, Request, Response } from 'express';
 import { env } from '../config/env.js';
-import { ValidationError } from 'yup';
 import {
   PrismaClientValidationError,
   PrismaClientKnownRequestError,
@@ -62,16 +61,12 @@ const errorMiddleware = (
   _: NextFunction
 ) => {
   let httpCode = err.httpCode || 500,
-    message = err.message || 'Terjadi kesalahan',
-    data = undefined;
+    message = err.message || 'Terjadi kesalahan';
   const stack = env.isDevelopment ? err?.stack?.split('\n') : undefined;
 
   if (env.isDevelopment) console.log(err);
 
-  if (err instanceof PrismaClientKnownRequestError && err.code == 'P2003') {
-    httpCode = httpStatus.UNPROCESSABLE_ENTITY;
-    message = 'Cannot change this data because it is linked to other data';
-  } else if (err instanceof PrismaClientValidationError) {
+  if (err instanceof PrismaClientValidationError) {
     httpCode = httpStatus.BAD_REQUEST;
     if (err.message.includes('Unknown argument')) {
       const part = err.message.match(/Unknown argument `[^`]+`/);
@@ -88,31 +83,6 @@ const errorMiddleware = (
   ) {
     httpCode = httpStatus.NOT_FOUND;
     message = `${err.meta?.modelName ?? 'Data'} not found`;
-  } else if (
-    err instanceof PrismaClientKnownRequestError &&
-    err.code == 'P2002'
-  ) {
-    httpCode = httpStatus.CONFLICT;
-    const target =
-      (err.meta?.driverAdapterError as any)?.cause?.originalMessage?.replace(
-        /^duplicate key value violates unique constraint "(.*)_key"$/,
-        '$1'
-      ) ?? '';
-    if (target)
-      message = `An entry with the same value for ${target} already exists.`;
-    else message = 'There are duplicate values';
-  } else if (err instanceof ValidationError) {
-    httpCode = httpStatus.UNPROCESSABLE_ENTITY;
-    message = 'Validation failed';
-    data = err.inner.map((i) =>
-      i.errors
-        .map((e) =>
-          e.toLowerCase().includes(i.path?.toLowerCase() ?? '')
-            ? e
-            : `${i.path ?? ''}: ${e}`
-        )
-        .join(', ')
-    );
   } else if (err instanceof HttpError) {
     httpCode = err.httpCode;
     message = err.message;
@@ -123,7 +93,6 @@ const errorMiddleware = (
   res.status(httpCode).json({
     status: httpCode > 199 && httpCode < 300,
     message: message,
-    data: data,
     stack: stack,
   });
 };
