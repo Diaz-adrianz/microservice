@@ -33,7 +33,7 @@ export const createActivity = y.object({
   resource: y.string().optional(),
   resourceId: y.string().optional(),
   action: y.string().optional(),
-  data: y.object().noUnknown().optional(),
+  data: y.object().unknown().optional(),
 });
 
 export type CreateActivity = y.InferType<typeof createActivity>;
