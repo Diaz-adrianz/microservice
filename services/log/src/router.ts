@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import logEventRouter from './core/logevent/logevent.router.js';
+import activityRouter from './core/activity/activity.router';
 
 const r = Router();
 
-r.use('/event', logEventRouter);
+r.use('/activities', activityRouter);
 
 const router = r;
 export default router;

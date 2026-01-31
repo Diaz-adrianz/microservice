@@ -3,14 +3,14 @@ import { browseQueryParser } from '../../lib/browse-query/parser.js';
 import type { BrowseQuery } from '../../lib/browse-query/schema.js';
 import { prisma } from '../../lib/prisma/index.js';
 
-class LogEventService extends BaseService {
+class ActivityService extends BaseService {
   constructor() {
     super(prisma);
   }
 
   browse = async (query?: BrowseQuery) => {
     const q = browseQueryParser(query);
-    const data = await this.db.logEvent.findMany({
+    const data = await this.db.activity.findMany({
       ...q,
       select: {
         id: true,
@@ -24,19 +24,19 @@ class LogEventService extends BaseService {
       },
     });
     const count = query?.paginate
-      ? await this.db.logEvent.count({ where: q.where })
+      ? await this.db.activity.count({ where: q.where })
       : undefined;
 
     return this.paginate(data, { count, take: q.take, skip: q.skip });
   };
 
   read = async (id: string) => {
-    const data = await this.db.logEvent.findUniqueOrThrow({
+    const data = await this.db.activity.findUniqueOrThrow({
       where: { id },
     });
     return data;
   };
 }
 
-const logEventService = new LogEventService();
-export { logEventService, LogEventService };
+const activityService = new ActivityService();
+export { activityService, ActivityService };

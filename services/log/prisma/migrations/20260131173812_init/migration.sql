@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "log_events" (
+CREATE TABLE "activities" (
     "id" TEXT NOT NULL,
     "ts" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "level" TEXT NOT NULL,
@@ -18,5 +18,5 @@ CREATE TABLE "log_events" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "log_events_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "activities_pkey" PRIMARY KEY ("id")
 );

@@ -34,7 +34,7 @@ const permissions: Record<
     },
   },
   log: {
-    logevent: {
+    activity: {
       browse: undefined,
       read: undefined,
     },

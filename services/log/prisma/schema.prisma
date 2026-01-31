@@ -7,7 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
-model LogEvent {
+model Activity {
   id String   @id @default(uuid())
   ts DateTime @default(now()) @map("ts")
 
@@ -31,5 +31,5 @@ model LogEvent {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("log_events")
+  @@map("activities")
 }
