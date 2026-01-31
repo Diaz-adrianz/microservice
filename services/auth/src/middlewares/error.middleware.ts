@@ -68,7 +68,7 @@ const errorMiddleware = (
     data = undefined;
   const stack = env.isDevelopment ? err?.stack?.split('\n') : undefined;
 
-  if (env.isDevelopment) logger.log(err);
+  if (env.isDevelopment) logger.error(err);
 
   if (err instanceof PrismaClientKnownRequestError && err.code == 'P2003') {
     httpCode = httpStatus.UNPROCESSABLE_ENTITY;

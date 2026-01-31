@@ -65,7 +65,7 @@ const errorMiddleware = (
     message = err.message || 'Terjadi kesalahan';
   const stack = env.isDevelopment ? err?.stack?.split('\n') : undefined;
 
-  if (env.isDevelopment) logger.log(err);
+  if (env.isDevelopment) logger.error(err);
 
   if (err instanceof PrismaClientValidationError) {
     httpCode = httpStatus.BAD_REQUEST;
